@@ -1,4 +1,3 @@
-
 #Munin plugin for elasticsearch
 
 A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JSON gem](http://rubygems.org/gems/json).
@@ -7,7 +6,7 @@ A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JS
 
  * cache - field and filter cache stats
  * docs - document count
- * jvm - provides JVM heap stats
+ * jvm - JVM heap stats
  * store - size of index
 
 ##Configuration
@@ -18,10 +17,10 @@ A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JS
  * node - the name of the node to monitor (required)
 
 ###Example Config
-
+```
 [elasticsearch_*]
 env.host 10.1.2.14
 env.port 9200
 env.node pinky
-
+```
 
