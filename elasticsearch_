@@ -1,0 +1,108 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'net/http'
+require 'json'
+
+@host = ENV.member?('host') ? ENV['host']: "localhost"
+@node = ENV.member?('node') ? ENV['node']: ""
+@port = ENV.member?('port') ? ENV['port']: 9200
+
+def fetch(resource)
+	response = Net::HTTP.get_response(URI.parse("http://" + @host + ":" + @port.to_s + resource))
+	return JSON.parse(response.body)
+end
+
+err = IO.new(2, "w")
+
+mode = $0.gsub /.*\/elasticsearch_/, ""
+
+if ARGV[0] == "config"
+    case mode
+        when "jvm"
+            puts "graph_title elasticsearch JVM heap"
+            puts "graph_category elasticsearch"
+            puts "graph_args --base 1024 -l 0"
+            puts "graph_vlabel Bytes"
+            
+	    	puts "graph_order used committed"
+            puts "used.label used bytes";
+            puts "used.draw AREA";
+            puts "committed.label commited bytes";
+            puts "committed.draw LINE2";
+            
+        when "cache"
+            puts "graph_title elasticsearch cache"
+            puts "graph_category elasticsearch"
+            puts "graph_args --base 1024 -l 0"
+            puts "graph_vlabel Bytes"
+            
+	    	puts "graph_order field filter"
+            puts "field.label field cache";
+            puts "field.draw LINE2";
+            puts "filter.label filter cache";
+            puts "field.draw LINE2";
+            
+        when "docs"
+            puts "graph_title elasticsearch docs"
+            puts "graph_category elasticsearch"
+            puts "graph_args --base 1000 -l 0"
+            puts "graph_vlabel Documents"
+            
+	    	puts "graph_order count"
+            puts "count.label document count";
+            puts "count.draw LINE2";
+            
+        when "store"
+            puts "graph_title elasticsearch store"
+            puts "graph_category elasticsearch"
+            puts "graph_args --base 1024 -l 0"
+            puts "graph_vlabel Bytes"
+            
+	    	puts "graph_order size"
+            puts "size.label store size";
+            puts "size.draw LINE2";
+    end
+    exit 0
+end
+
+data = {};
+
+begin
+    nodes_d = fetch('/_cluster/nodes');
+    stats_d = fetch( '/_cluster/nodes/stats?jvm=true');
+rescue
+    err.puts "Fetch error"
+    exit 1
+end
+
+node_index = nodes_d['nodes'].find_index {|k,v| v['name'] == @node }
+if node_index.nil?
+	err.puts "Node node found"
+	exit 1
+end;
+
+node_stats = stats_d['nodes'][nodes_d['nodes'].keys[node_index]];
+
+data['jvm'] = {
+	"used" => node_stats['jvm']['mem']['heap_used_in_bytes'],
+	"committed" => node_stats['jvm']['mem']['heap_committed_in_bytes']
+}
+
+data['cache'] = {
+	"field" => node_stats['indices']['cache']['field_size_in_bytes'],
+	"filter" => node_stats['indices']['cache']['filter_size_in_bytes']
+}
+
+data['docs'] = {
+	"count" => node_stats['indices']['docs']['count']
+}
+
+data['store'] = {
+	"size" => node_stats['indices']['store']['size_in_bytes']
+}
+
+# print result
+data[mode].each do |k, v|
+    printf "#{k}.value %s\n", v
+end
