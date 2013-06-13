@@ -9,8 +9,8 @@ require 'json'
 @port = ENV.member?('port') ? ENV['port']: 9200
 
 def fetch(resource)
-	response = Net::HTTP.get_response(URI.parse("http://" + @host + ":" + @port.to_s + resource))
-	return JSON.parse(response.body)
+    response = Net::HTTP.get_response(URI.parse("http://" + @host + ":" + @port.to_s + resource))
+    return JSON.parse(response.body)
 end
 
 err = IO.new(2, "w")
@@ -25,11 +25,23 @@ if ARGV[0] == "config"
             puts "graph_args --base 1024 -l 0"
             puts "graph_vlabel Bytes"
             
-	    	puts "graph_order used committed"
+            puts "graph_order used committed"
             puts "used.label used bytes";
             puts "used.draw AREA";
-            puts "committed.label commited bytes";
+            puts "committed.label committed bytes";
             puts "committed.draw LINE2";
+            
+        when "gc"
+            puts "graph_title elasticsearch GC"
+            puts "graph_category elasticsearch"
+            puts "graph_args --base 1000 -l 0"
+            puts "graph_vlabel Collections per second"
+            
+            puts "graph_order count"
+            puts "count.label GC count";
+            puts "count.type DERIVE";
+            puts "count.min 0";
+            puts "count.draw LINE2";
             
         when "cache"
             puts "graph_title elasticsearch cache"
@@ -37,7 +49,7 @@ if ARGV[0] == "config"
             puts "graph_args --base 1024 -l 0"
             puts "graph_vlabel Bytes"
             
-	    	puts "graph_order field filter"
+            puts "graph_order field filter"
             puts "field.label field cache";
             puts "field.draw LINE2";
             puts "filter.label filter cache";
@@ -49,9 +61,36 @@ if ARGV[0] == "config"
             puts "graph_args --base 1000 -l 0"
             puts "graph_vlabel Documents"
             
-	    	puts "graph_order count"
+            puts "graph_order count"
             puts "count.label document count";
             puts "count.draw LINE2";
+            
+        when "ops"
+            puts "graph_title elasticsearch Index Operations"
+            puts "graph_category elasticsearch"
+            puts "graph_args --base 1000 -l 0"
+            puts "graph_vlabel Operations per second"
+            
+            puts "graph_order index get search delete"
+            puts "index.label index";
+            puts "index.type DERIVE";
+            puts "index.min 0";
+            puts "index.draw LINE2";
+        
+            puts "get.label get";
+            puts "get.type DERIVE";
+            puts "get.min 0";
+            puts "get.draw LINE2";
+            
+            puts "search.label search";
+            puts "search.type DERIVE";
+            puts "search.min 0";
+            puts "search.draw LINE2";
+            
+            puts "delete.label delete";
+            puts "delete.type DERIVE";
+            puts "delete.min 0";
+            puts "delete.draw LINE2";
             
         when "store"
             puts "graph_title elasticsearch store"
@@ -59,7 +98,7 @@ if ARGV[0] == "config"
             puts "graph_args --base 1024 -l 0"
             puts "graph_vlabel Bytes"
             
-	    	puts "graph_order size"
+            puts "graph_order size"
             puts "size.label store size";
             puts "size.draw LINE2";
     end
@@ -70,7 +109,7 @@ data = {};
 
 begin
     nodes_d = fetch('/_cluster/nodes');
-    stats_d = fetch( '/_cluster/nodes/stats?jvm=true');
+    stats_d = fetch( '/_cluster/nodes/stats?jvm=true&fs=true');
 rescue
     err.puts "Fetch error"
     exit 1
@@ -78,28 +117,39 @@ end
 
 node_index = nodes_d['nodes'].find_index {|k,v| v['name'] == @node }
 if node_index.nil?
-	err.puts "Node node found"
-	exit 1
+    err.puts "Node node found"
+    exit 1
 end;
 
 node_stats = stats_d['nodes'][nodes_d['nodes'].keys[node_index]];
 
 data['jvm'] = {
-	"used" => node_stats['jvm']['mem']['heap_used_in_bytes'],
-	"committed" => node_stats['jvm']['mem']['heap_committed_in_bytes']
+    "used" => node_stats['jvm']['mem']['heap_used_in_bytes'],
+    "committed" => node_stats['jvm']['mem']['heap_committed_in_bytes']
+}
+
+data['gc'] = {
+    "count" => node_stats['gc']['collection_count'],
 }
 
 data['cache'] = {
-	"field" => node_stats['indices']['cache']['field_size_in_bytes'],
-	"filter" => node_stats['indices']['cache']['filter_size_in_bytes']
+    "field" => node_stats['indices']['cache']['field_size_in_bytes'],
+    "filter" => node_stats['indices']['cache']['filter_size_in_bytes']
 }
 
 data['docs'] = {
-	"count" => node_stats['indices']['docs']['count']
+    "count" => node_stats['indices']['docs']['count']
+}
+
+data['ops'] = {
+    "index" => node_stats['indices']['indexing']['index_total'],
+    "get" => node_stats['indices']['get']['total'],
+    "search" => node_stats['indices']['search']['query_total'],
+    "delete" => node_stats['indices']['indexing']['delete_total']
 }
 
 data['store'] = {
-	"size" => node_stats['indices']['store']['size_in_bytes']
+    "size" => node_stats['indices']['store']['size_in_bytes']
 }
 
 # print result

@@ -6,7 +6,9 @@ A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JS
 
  * cache - field and filter cache stats
  * docs - document count
+ * gc - GC collections/sec
  * jvm - JVM heap stats
+ * ops - index, get, search, delete operations/sec
  * store - size of index
 
 ##Configuration
