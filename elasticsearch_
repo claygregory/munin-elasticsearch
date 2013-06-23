@@ -53,9 +53,9 @@ if ARGV[0] == "config"
             puts "field.label field cache";
             puts "field.draw LINE2";
             puts "filter.label filter cache";
-            puts "field.draw LINE2";
-            puts "filter.label id cache";
-            puts "field.draw LINE2";
+            puts "filter.draw LINE2";
+            puts "id.label id cache";
+            puts "id.draw LINE2";
             
         when "docs"
             puts "graph_title elasticsearch docs"
