@@ -49,10 +49,12 @@ if ARGV[0] == "config"
             puts "graph_args --base 1024 -l 0"
             puts "graph_vlabel Bytes"
             
-            puts "graph_order field filter"
+            puts "graph_order field filter id"
             puts "field.label field cache";
             puts "field.draw LINE2";
             puts "filter.label filter cache";
+            puts "field.draw LINE2";
+            puts "filter.label id cache";
             puts "field.draw LINE2";
             
         when "docs"
@@ -66,7 +68,7 @@ if ARGV[0] == "config"
             puts "count.draw LINE2";
             
         when "ops"
-            puts "graph_title elasticsearch Index Operations"
+            puts "graph_title elasticsearch index operations"
             puts "graph_category elasticsearch"
             puts "graph_args --base 1000 -l 0"
             puts "graph_vlabel Operations per second"
@@ -109,7 +111,7 @@ data = {};
 
 begin
     nodes_d = fetch('/_cluster/nodes');
-    stats_d = fetch( '/_cluster/nodes/stats?jvm=true&fs=true');
+    stats_d = fetch( '/_cluster/nodes/stats?jvm=true&fs=true&indices=true');
 rescue
     err.puts "Fetch error"
     exit 1
@@ -133,8 +135,9 @@ data['gc'] = {
 }
 
 data['cache'] = {
-    "field" => node_stats['indices']['cache']['field_size_in_bytes'],
-    "filter" => node_stats['indices']['cache']['filter_size_in_bytes']
+    "field" => node_stats['indices']['fielddata']['memory_size_in_bytes'],
+    "filter" => node_stats['indices']['filter_cache']['memory_size_in_bytes'],
+    "id" => node_stats['indices']['id_cache']['memory_size_in_bytes']
 }
 
 data['docs'] = {
