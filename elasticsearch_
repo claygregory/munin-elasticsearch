@@ -110,8 +110,8 @@ end
 data = {};
 
 begin
-    nodes_d = fetch('/_cluster/nodes');
-    stats_d = fetch( '/_cluster/nodes/stats?jvm=true&fs=true&indices=true');
+    nodes_d = fetch('/_nodes');
+    stats_d = fetch( '/_nodes/'+@node+'/stats?jvm=true&fs=true&indices=true');
 rescue
     err.puts "Fetch error"
     exit 1
