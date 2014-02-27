@@ -119,7 +119,7 @@ end
 
 node_index = nodes_d['nodes'].find_index {|k,v| v['name'] == @node }
 if node_index.nil?
-    err.puts "Node node found"
+    err.puts "No node found"
     exit 1
 end;
 
