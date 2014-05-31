@@ -111,7 +111,8 @@ data = {};
 
 begin
     nodes_d = fetch('/_nodes');
-    stats_d = fetch( '/_nodes/'+@node+'/stats?jvm=true&fs=true&indices=true');
+    node_encode = URI.escape(@node)
+    stats_d = fetch( '/_nodes/'+node_encode+'/stats?jvm=true&fs=true&indices=true');
 rescue
     err.puts "Fetch error"
     exit 1
