@@ -23,6 +23,6 @@ A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JS
 [elasticsearch_*]
 env.host 10.1.2.14
 env.port 9200
-env.node pinky
+env.node pinky rat
 ```
 
