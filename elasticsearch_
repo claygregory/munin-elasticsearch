@@ -32,7 +32,7 @@ if ARGV[0] == "config"
             puts "committed.draw LINE2";
             
         when "gc"
-            puts "graph_title elasticsearch GC"
+            puts "graph_title elasticsearch GC collection count"
             puts "graph_category elasticsearch"
             puts "graph_args --base 1000 -l 0"
             puts "graph_vlabel Collections per second"
@@ -42,6 +42,18 @@ if ARGV[0] == "config"
             puts "count.type DERIVE";
             puts "count.min 0";
             puts "count.draw LINE2";
+
+        when "gc_time"
+            puts "graph_title elasticsearch GC collection time"
+            puts "graph_category elasticsearch"
+            puts "graph_args --base 1000 -l 0"
+            puts "graph_vlabel Running time (ms)"
+            
+            puts "graph_order time"
+            puts "time.label Running time (ms)";
+            puts "time.type DERIVE";
+            puts "time.min 0";
+            puts "time.draw LINE2";
             
         when "cache"
             puts "graph_title elasticsearch cache"
@@ -118,7 +130,7 @@ rescue
     exit 1
 end
 
-node_index = nodes_d['nodes'].find_index {|k,v| v['name'] == @node }
+node_index = nodes_d['nodes'].find_index {|k,v| v['name'] == @node}
 if node_index.nil?
     err.puts "No node found"
     exit 1
@@ -132,7 +144,11 @@ data['jvm'] = {
 }
 
 data['gc'] = {
-    "count" => node_stats['jvm']['gc']['collection_count']
+    "count" => node_stats['jvm']['gc']['collectors'].inject(0) {|sum, collector| sum += collector.last['collection_count']}
+}
+
+data['gc_time'] = {
+    "count" => node_stats['jvm']['gc']['collectors'].inject(0) {|sum, collector| sum += collector.last['collection_time_in_millis']}
 }
 
 data['cache'] = {
