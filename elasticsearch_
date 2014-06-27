@@ -148,7 +148,7 @@ data['gc'] = {
 }
 
 data['gc_time'] = {
-    "count" => node_stats['jvm']['gc']['collectors'].inject(0) {|sum, collector| sum += collector.last['collection_time_in_millis']}
+    "time" => node_stats['jvm']['gc']['collectors'].inject(0) {|sum, collector| sum += collector.last['collection_time_in_millis']}
 }
 
 data['cache'] = {
