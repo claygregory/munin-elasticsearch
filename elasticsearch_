@@ -61,13 +61,11 @@ if ARGV[0] == "config"
             puts "graph_args --base 1024 -l 0"
             puts "graph_vlabel Bytes"
             
-            puts "graph_order field filter id"
+            puts "graph_order field filter"
             puts "field.label field cache";
             puts "field.draw LINE2";
-            puts "filter.label filter cache";
+            puts "filter.label query cache";
             puts "filter.draw LINE2";
-            puts "id.label id cache";
-            puts "id.draw LINE2";
             
         when "docs"
             puts "graph_title elasticsearch docs"
@@ -124,7 +122,7 @@ data = {};
 begin
     nodes_d = fetch('/_nodes');
     node_encode = URI.escape(@node)
-    stats_d = fetch( '/_nodes/'+node_encode+'/stats?jvm=true&fs=true&indices=true');
+    stats_d = fetch( '/_nodes/'+node_encode+'/stats');
 rescue
     err.puts "Fetch error"
     exit 1
@@ -153,8 +151,7 @@ data['gc_time'] = {
 
 data['cache'] = {
     "field" => node_stats['indices']['fielddata']['memory_size_in_bytes'],
-    "filter" => node_stats['indices']['filter_cache']['memory_size_in_bytes'],
-    "id" => node_stats['indices']['id_cache']['memory_size_in_bytes']
+    "filter" => node_stats['indices']['query_cache']['memory_size_in_bytes']
 }
 
 data['docs'] = {
