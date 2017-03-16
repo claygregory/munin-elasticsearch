@@ -14,12 +14,12 @@ A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JS
 
 `elasticsearch_docs` - document count
 
-### Gargbage Collection
+### Garbage Collection
 ![](./screenshots/elasticsearch_gc-day.png)
 
 `elasticsearch_gc` - GC collections/sec
 
-### Gargbage Collection Running Time
+### Garbage Collection Running Time
 ![](./screenshots/elasticsearch_gc_time-day.png)
 
 `elasticsearch_gc_time` - GC collection running time in ms
