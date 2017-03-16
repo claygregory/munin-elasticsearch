@@ -37,7 +37,7 @@ A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JS
 ### Store
 ![](./screenshots/elasticsearch_store-day.png)
 
-`elasticsearch_stores` - Size of index on disk
+`elasticsearch_store` - Size of index on disk
 
 ## Configuration
 
