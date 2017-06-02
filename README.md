@@ -39,7 +39,19 @@ A simple Munin plugin for monitoring elasticsearch nodes in Ruby. Depends on [JS
 
 `elasticsearch_store` - Size of index on disk
 
+
+## Installation
+
+See the [Munin documentation](http://guide.munin-monitoring.org/) for complete instructions on [plugin usage](http://guide.munin-monitoring.org/en/latest/plugin/use.html). In short, once `elasticsearch_` is in your plugin directory, create symlinks for each desired mode in your Munin service dir (usually `/etc/munin/plugins/`). For example, to enable JVM monitoring:
+
+```bash
+ln -s /usr/local/munin/lib/plugins/elasticsearch_ /etc/munin/plugins/elasticsearch_jvm
+```
+
+
 ## Configuration
+
+You'll also need to create a configuration file for the plugin, usually this would be `/etc/munin/plugin-conf.d/elasticsearch`.
 
 ### Variables
  * host - a elasticsearch node capable of providing stats interface (default localhost)
@@ -53,4 +65,8 @@ env.host 10.1.2.14
 env.port 9200
 env.node pinky rat
 ```
+
+## License
+
+See the included [LICENSE](LICENSE.md) for rights and limitations under the terms of the MIT license.
 
