@@ -120,9 +120,9 @@ end
 data = {};
 
 begin
-    nodes_d = fetch('/_nodes');
     node_encode = URI.escape(@node)
-    stats_d = fetch( '/_nodes/'+node_encode+'/stats');
+    nodes_d = fetch('/_nodes/'+node_encode);
+    stats_d = fetch('/_nodes/'+node_encode+'/stats');
 rescue
     err.puts "Fetch error"
     exit 1
