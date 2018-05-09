@@ -3,9 +3,13 @@
 require 'rubygems'
 require 'net/http'
 require 'json'
+require 'socket'
+
+ #%# family=auto
+ #%# capabilities=autoconf suggest
 
 @host = ENV.member?('host') ? ENV['host']: "localhost"
-@node = ENV.member?('node') ? ENV['node']: ""
+@node = ENV.member?('node') ? ENV['node']: Socket.gethostname
 @port = ENV.member?('port') ? ENV['port']: 9200
 
 def fetch(resource)
@@ -16,6 +20,30 @@ end
 err = IO.new(2, "w")
 
 mode = $0.gsub /.*\/elasticsearch_/, ""
+
+if ARGV[0] == "autoconf"
+    begin
+        node_encode = URI.escape(@node)
+        nodes_d = fetch('/_nodes/'+node_encode);
+        puts "yes"
+        exit 0
+    rescue
+        puts "no"
+        exit 0
+    end
+end
+
+
+if ARGV[0] == "suggest"
+    puts "jvm"
+    puts "gc"
+    puts "gc_time"
+    puts "cache"
+    puts "docs"
+    puts "ops"
+    puts "store"
+    exit 0
+end
 
 if ARGV[0] == "config"
     case mode
