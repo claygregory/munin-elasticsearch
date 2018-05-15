@@ -51,12 +51,12 @@ ln -s /usr/local/munin/lib/plugins/elasticsearch_ /etc/munin/plugins/elasticsear
 
 ## Configuration
 
-You'll also need to create a configuration file for the plugin, usually this would be `/etc/munin/plugin-conf.d/elasticsearch`.
+You may also need to create a configuration file for the plugin, if the included defaults aren't suitable to your environment. Usually this would be `/etc/munin/plugin-conf.d/elasticsearch`.
 
 ### Variables
  * host - a elasticsearch node capable of providing stats interface (default localhost)
  * port - elasticsearch HTTP API port (default 9200)
- * node - the name of the node to monitor (required)
+ * node - the name of the node to monitor (default _local)
 
 ### Example Config
 ```

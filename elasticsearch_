@@ -3,13 +3,12 @@
 require 'rubygems'
 require 'net/http'
 require 'json'
-require 'socket'
 
  #%# family=auto
  #%# capabilities=autoconf suggest
 
 @host = ENV.member?('host') ? ENV['host']: "localhost"
-@node = ENV.member?('node') ? ENV['node']: Socket.gethostname
+@node = ENV.member?('node') ? ENV['node']: "_local"
 @port = ENV.member?('port') ? ENV['port']: 9200
 
 def fetch(resource)
@@ -149,20 +148,17 @@ data = {};
 
 begin
     node_encode = URI.escape(@node)
-    nodes_d = fetch('/_nodes/'+node_encode);
-    stats_d = fetch('/_nodes/'+node_encode+'/stats');
+    stats = fetch('/_nodes/'+node_encode+'/stats');
 rescue
     err.puts "Fetch error"
     exit 1
 end
 
-node_index = nodes_d['nodes'].find_index {|k,v| v['name'] == @node}
-if node_index.nil?
+node_stats = stats['nodes'].values.first
+if node_stats.nil?
     err.puts "No node found"
     exit 1
-end;
-
-node_stats = stats_d['nodes'][nodes_d['nodes'].keys[node_index]];
+end
 
 data['jvm'] = {
     "used" => node_stats['jvm']['mem']['heap_used_in_bytes'],
