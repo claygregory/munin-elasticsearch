@@ -1,6 +1,6 @@
 # Munin plugin for elasticsearch
 
-A Munin plugin for monitoring Elasticsearch nodes. Written in Ruby, depends on [JSON gem](http://rubygems.org/gems/json). Compatible with Elasticsearch 5.x and 6.x.
+A Munin plugin for monitoring Elasticsearch nodes. Written in Ruby, depends on [JSON gem](http://rubygems.org/gems/json). Compatible with Elasticsearch 5.x–7.x.
 
 ## Supported Modes
 
