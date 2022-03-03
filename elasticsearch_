@@ -10,9 +10,18 @@ require 'json'
 @host = ENV.member?('host') ? ENV['host']: "localhost"
 @node = ENV.member?('node') ? ENV['node']: "_local"
 @port = ENV.member?('port') ? ENV['port']: 9200
+@user = ENV.member?('user') ? ENV['user']: ""
+@pass = ENV.member?('pass') ? ENV['pass']: ""
 
 def fetch(resource)
-    response = Net::HTTP.get_response(URI.parse("http://" + @host + ":" + @port.to_s + resource))
+    uri = URI("http://" + @host + ":" + @port.to_s + resource)
+    req = Net::HTTP::Get.new(uri)
+    unless @user.empty?
+        req.basic_auth @user, @pass
+    end
+    response = Net::HTTP.start(uri.hostname, uri.port) {|http|
+        http.request(req)
+    }
     return JSON.parse(response.body)
 end
 

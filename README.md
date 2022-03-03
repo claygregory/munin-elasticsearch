@@ -57,6 +57,8 @@ You may also need to create a configuration file for the plugin, if the included
  * host - a elasticsearch node capable of providing stats interface (default localhost)
  * port - elasticsearch HTTP API port (default 9200)
  * node - the name of the node to monitor (default _local)
+ * user - if HTTP authentication is required, user name
+ * pass - if HTTP authentication is required, user password
 
 ### Example Config
 ```
@@ -64,6 +66,8 @@ You may also need to create a configuration file for the plugin, if the included
 env.host 10.1.2.14
 env.port 9200
 env.node pinky rat
+env.user johnsmith
+env.user passw0rd
 ```
 
 ## License
