@@ -158,8 +158,8 @@ data = {};
 begin
     node_encode = URI.encode_www_form_component(@node)
     stats = fetch('/_nodes/'+node_encode+'/stats');
-rescue
-    err.puts "Fetch error"
+rescue => error
+    err.puts "Fetch error: #{error}"
     exit 1
 end
 
