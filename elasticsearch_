@@ -31,7 +31,7 @@ mode = $0.gsub /.*\/elasticsearch_/, ""
 
 if ARGV[0] == "autoconf"
     begin
-        node_encode = URI.escape(@node)
+        node_encode = URI.encode_www_form_component(@node)
         nodes_d = fetch('/_nodes/'+node_encode);
         puts "yes"
         exit 0
@@ -156,10 +156,10 @@ end
 data = {};
 
 begin
-    node_encode = URI.escape(@node)
+    node_encode = URI.encode_www_form_component(@node)
     stats = fetch('/_nodes/'+node_encode+'/stats');
-rescue
-    err.puts "Fetch error"
+rescue => error
+    err.puts "Fetch error: #{error}"
     exit 1
 end
 
